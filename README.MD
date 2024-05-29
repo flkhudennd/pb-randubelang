@@ -4,4 +4,4 @@ Routing di index.php
 Akses admin tidak melalui tombol login dan hanya bisa register di dashboard admin (harus melalui proses login terlebih dahulu).
 
 username admin: pbadmin
-password admin: admin
+<p>password admin: admin
