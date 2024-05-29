@@ -13,7 +13,6 @@ if ($result->num_rows === 0) {
 }
 
 $news = $result->fetch_assoc();
-
 $queryCategories = "SELECT * FROM categories";
 $resultCategories = $conn->query($queryCategories);
 ?>
@@ -64,57 +63,57 @@ $resultCategories = $conn->query($queryCategories);
                 </div>
 
                 <div class="card my-4">
-    <h5 class="card-header">Categories</h5>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-lg-6">
-                <ul class="list-unstyled mb-0">
-                    <?php 
-                    $counter = 0; 
-                    while ($category = $resultCategories->fetch_assoc()): 
-                        if ($counter < $resultCategories->num_rows / 2): ?>
-                            <li><a href="#"><?php echo $category['category_name']; ?></a></li>
-                        <?php endif;
-                        $counter++;
-                    endwhile; ?>
-                </ul>
-            </div>
-            <div class="col-lg-6">
-                <ul class="list-unstyled mb-0">
-                    <?php 
-                    $counter = 0; 
-                    $resultCategories->data_seek(0); 
-                    while ($category = $resultCategories->fetch_assoc()): 
-                        if ($counter >= $resultCategories->num_rows / 2): ?>
-                            <li><a href="#"><?php echo $category['category_name']; ?></a></li>
-                        <?php endif;
-                        $counter++;
-                    endwhile; ?>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
-            </div>
-        </div>
-
-        <hr>
-        <div class="row mb-4">
-            <!-- Related News -->
-            <?php for ($i = 1; $i <= 4; $i++): ?>
-            <div class="col-lg-3 col-md-4 col-sm-6">
-                <div class="card h-100">
-                    <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt="" loading="lazy"></a>
+                    <h5 class="card-header">Categories</h5>
                     <div class="card-body">
-                        <p class="news-category">[News Category]</p>
-                        <h4 class="card-title"><a href="#">Tittle News <?= $i ?></a></h4>
-                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
-                        <p class="date-news">[Date of publication]</p>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <ul class="list-unstyled mb-0">
+                                    <?php 
+                                    $counter = 0; 
+                                    while ($category = $resultCategories->fetch_assoc()): 
+                                        if ($counter < $resultCategories->num_rows / 2): ?>
+                                            <li><a href="#"><?php echo $category['category_name']; ?></a></li>
+                                        <?php endif;
+                                        $counter++;
+                                    endwhile; ?>
+                                </ul>
+                            </div>
+                            <div class="col-lg-6">
+                                <ul class="list-unstyled mb-0">
+                                    <?php 
+                                    $counter = 0; 
+                                    $resultCategories->data_seek(0); 
+                                    while ($category = $resultCategories->fetch_assoc()): 
+                                        if ($counter >= $resultCategories->num_rows / 2): ?>
+                                            <li><a href="#"><?php echo $category['category_name']; ?></a></li>
+                                        <?php endif;
+                                        $counter++;
+                                    endwhile; ?>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <?php endfor; ?>
+
+            <hr>
+            <h2 class="mb-4">Related News</h2>
+            <div class="row mb-4">
+                <!-- Related News -->
+                <?php for ($i = 1; $i <= 4; $i++): ?>
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="card h-100">
+                        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt="" loading="lazy"></a>
+                        <div class="card-body">
+                            <p class="news-category">[News Category]</p>
+                            <h4 class="card-title"><a href="#">Tittle News <?= $i ?></a></h4>
+                            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+                            <p class="date-news">[Date of publication]</p>
+                        </div>
+                    </div>
+                </div>
+                <?php endfor; ?>
+            </div>
         </div>
     </div>
 
