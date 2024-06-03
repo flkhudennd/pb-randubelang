@@ -25,7 +25,7 @@ $result = $conn->query($query);
                 <table class="table">
                     <thead>
                         <tr>
-                            <th scope="col" class="col-lg-7">Title</th>
+                            <th scope="col" class="col-lg-6">Title</th>
                             <th scope="col">Category</th>
                             <th scope="col"">Created At</th>
                             <th scope="col" class="col-lg-2">Action</th>
@@ -36,12 +36,14 @@ $result = $conn->query($query);
                     if ($result && $result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
                             $created_at = new DateTime($row['created_at']);
-                            $formatted_date = strftime('%A, %d-%m-%Y %H:%M' . ' WIB', $created_at->getTimestamp()); 
                             
                             echo "<tr>";
                             echo "<td>" . htmlspecialchars($row['title']) . "</td>";
                             echo "<td>" . htmlspecialchars($row['category_name']) . "</td>";
-                            echo "<td>" . htmlspecialchars($formatted_date) . "</td>";
+                            echo "<td>";
+                            echo strftime('%A, %d %B %Y', strtotime($row['created_at'])) . "<br>";
+                            echo date('H:i', strtotime($row['created_at'])) . " WIB";
+                            echo "</td>";
                             echo "<td>";
                             echo '<a href="/portal-berita/dashboard?page=view-news&id=' . $row['news_id'] . ' " class="btn btn-sm btn-primary text-white" data-toggle="tooltip" data-placement="right" title="View"><i class="fas fa-eye"></i></a> ';
                             echo '<a href="/portal-berita/dashboard?page=edit-news&id=' . $row['news_id'] . ' " class="btn btn-sm btn-warning text-white" data-toggle="tooltip" data-placement="right" title="Edit"><i class="fas fa-file-pen"></i></a> ';

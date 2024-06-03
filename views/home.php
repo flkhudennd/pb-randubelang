@@ -80,6 +80,7 @@ $totalPages = ceil($totalNews / $newsPerPage);
 
 $query = "SELECT * FROM news
           LEFT JOIN categories ON news.category_id = categories.category_id
+          ORDER BY news.created_at DESC
           LIMIT $offset, $newsPerPage";
 $result = $conn->query($query);
 ?>
@@ -146,22 +147,19 @@ $result = $conn->query($query);
 
     <hr>
 
-    <div class="row mb-4">
-      <div class="col-md-8">
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias, expedita, saepe, vero rerum deleniti beatae veniam harum neque nemo praesentium cum alias asperiores commodi.</p>
-      </div>
-      <div class="col-md-4">
-        <button class="btn btn-lg btn-secondary btn-block" data-toggle="modal" data-target="#aduanModal">Pesan Aduan</button>
+      <div class="aduan">
+        <button class="btn btn-md btn-danger btn-block" data-toggle="modal" data-target="#aduanModal">
+            <span">Pesan Aduan</span>
+        </button>
       </div>
     </div>
-  </div>
 
   <?php require_once('templates/footer.php'); ?>
   <script src="assets/vendor/jquery/jquery.min.js"></script>
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-      const aduanButton = document.querySelector('.btn-secondary');
+      const aduanButton = document.querySelector('.btn-danger');
       const anonimCheckbox = document.getElementById('anonimCheckbox');
       const senderNameInput = document.getElementById('sender-name');
       const senderEmailInput = document.getElementById('email');

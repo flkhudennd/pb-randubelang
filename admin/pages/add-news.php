@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-$query = "SELECT category_id, category_name FROM categories";
+$query = "SELECT * FROM categories";
 $categoriesResult = $conn->query($query);
 ?>
 
