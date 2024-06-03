@@ -1,49 +1,6 @@
 <?php
 require_once('config.php');
 
-function displayComplaintForm() {
-  echo <<<HTML
-  <div class="modal fade" id="aduanModal" tabindex="-1" role="dialog" aria-labelledby="aduanModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="aduanModalLabel">Form Aduan</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form method="post" action="">
-            <div class="form-group">
-              <label for="message-text" class="col-form-label" rows="4">Pesan:</label>
-              <textarea class="form-control" id="message-text" name="message" placeholder="(Tuliskan aduan anda dengan detail, antumkan lokasi kejadian jika diperlukan)" required></textarea>
-            </div>
-            <div class="form-group">
-              <label for="sender-name" class="col-form-label">Nama Pengirim:</label>
-              <input type="text" class="form-control" id="sender-name" name="sender-name" required>
-            </div>
-            <div class="form-group">
-              <label for="email" class="col-form-label">Email:</label>
-              <input type="email" class="form-control" id="email" name="email" required>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="anonimCheckbox" name="anonimCheckbox">
-              <label class="form-check-label" for="anonimCheckbox">
-                Kirim sebagai anonim
-              </label>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-            <button type="submit" class="btn btn-primary">Kirim Aduan</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-  HTML;
-}
-
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['message'])) {
 
   $message = $_POST['message'];
@@ -83,6 +40,49 @@ $query = "SELECT * FROM news
           ORDER BY news.created_at DESC
           LIMIT $offset, $newsPerPage";
 $result = $conn->query($query);
+
+function displayComplaintForm() {
+    echo <<<HTML
+    <div class="modal fade" id="aduanModal" tabindex="-1" role="dialog" aria-labelledby="aduanModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="aduanModalLabel">Form Aduan</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form method="post" action="">
+              <div class="form-group">
+                <label for="message-text" class="col-form-label" rows="4">Pesan:</label>
+                <textarea class="form-control" id="message-text" name="message" placeholder="(Tuliskan aduan anda dengan detail, antumkan lokasi kejadian jika diperlukan)" required></textarea>
+              </div>
+              <div class="form-group">
+                <label for="sender-name" class="col-form-label">Nama Pengirim:</label>
+                <input type="text" class="form-control" id="sender-name" name="sender-name" required>
+              </div>
+              <div class="form-group">
+                <label for="email" class="col-form-label">Email:</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="anonimCheckbox" name="anonimCheckbox">
+                <label class="form-check-label" for="anonimCheckbox">
+                  Kirim sebagai anonim
+                </label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+              <button type="submit" class="btn btn-primary">Kirim Aduan</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    HTML;
+  }
 ?>
 
 <!DOCTYPE html>
@@ -147,14 +147,58 @@ $result = $conn->query($query);
 
     <hr>
 
-      <div class="aduan">
+    <!-- Jumbotron -->
+    <div class="jumbotron">
+        <h1 class="display-4">Sukses, Randubelang!</h1>
+        <blockquote class="blockquote">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+            <footer class="blockquote-footer">Someone famous in <cite title="Source Title">Source Title</cite></footer>
+        </blockquote>
+    </div>
+
+    <hr>
+
+    <!-- Berita Kategori Agenda Desa -->
+    <h1 class="my-4">Agenda Desa</h1>
+    <div class="row">
+        <?php 
+        $queryAgendaDesa = "SELECT * FROM news
+                            WHERE category_id = 13
+                            ORDER BY created_at DESC
+                            LIMIT 3";
+        $resultAgendaDesa = $conn->query($queryAgendaDesa);
+
+        while ($newsAgenda = $resultAgendaDesa->fetch_assoc()): ?>
+            <div class="col-lg-12 mb-4">
+                <a href="news-detail?id=<?php echo $newsAgenda['news_id']; ?>" style="text-decoration: none; color: inherit;">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <img src="<?php echo $newsAgenda['img_url']; ?>" alt="<?php echo $newsAgenda['title']; ?>" class="img-fluid">
+                        </div>
+                        <div class="col-lg-9">
+                            <h3><?php echo $newsAgenda['title']; ?></h3>
+                            <p class="text-muted"><?php echo strftime('%A, %d %B %Y', strtotime($newsAgenda['created_at'])); ?></p>
+                            <p><?php echo substr($newsAgenda['content'], 0, 100); ?>...</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        <?php endwhile; ?>
+    </div>
+
+    <div class="d-flex justify-content-center mb-4">
+        <a href="/portal-berita/all-news" class="btn btn-md btn-info">Lihat semua artikel</a>
+    </div>
+
+    <div class="aduan">
         <button class="btn btn-md btn-danger btn-block" data-toggle="modal" data-target="#aduanModal">
             <span">Pesan Aduan</span>
         </button>
-      </div>
     </div>
+</div>
 
   <?php require_once('templates/footer.php'); ?>
+  
   <script src="assets/vendor/jquery/jquery.min.js"></script>
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script>

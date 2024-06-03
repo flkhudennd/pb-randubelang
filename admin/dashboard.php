@@ -21,8 +21,8 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAdmin" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button"><i class="fas fa-user"></i></a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownAdmin">
-                <a class="dropdown-item" href="#">Profil</a>
-                <a class="dropdown-item" href="#">Pengaturan</a>
+                <a class="dropdown-item" href="#">Edit Profile</a>
+                <a class="dropdown-item" href="#">Add Profile</a>
                 <hr class="dropdown-divider">
                 <a class="dropdown-item btn-danger" href="#" id="logoutLink">Logout</a>
             </div>
@@ -100,7 +100,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                     case 'delete-news':
                         include_once __DIR__ . '/pages/delete-news.php';
                         break;
-                    case 'add-categories':
+                    case 'add-category':
                         include_once __DIR__ . '/pages/add-categories.php';
                         break;
                     case 'edit-category':
@@ -121,7 +121,6 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     </div>
 </div>
 
-
 <!-- jQuery and Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
@@ -136,8 +135,6 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             window.location.href = '/portal-berita/logout';
         });
     });
-
-    
 </script>
 </body>
 </html>

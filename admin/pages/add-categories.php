@@ -13,17 +13,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_param("s", $category_name);
 
             if ($stmt->execute()) {
-                $message = 'Kategori berhasil ditambahkan.';
+                $message = 'Category successfully added.';
             } else {
-                $message = 'Terjadi kesalahan saat menambahkan kategori.';
+                $message = 'An error occurred while adding categories.';
             }
 
             $stmt->close();
         } else {
-            $message = 'Gagal menyiapkan pernyataan: ' . $conn->error;
+            $message = 'Failed to prepare a statement: ' . $conn->error;
         }
     } else {
-        $message = 'Nama kategori tidak boleh kosong.';
+        $message = 'Category names cannot be empty.';
     }
 }
 

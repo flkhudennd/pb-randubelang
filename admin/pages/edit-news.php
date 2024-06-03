@@ -104,9 +104,9 @@ $categoriesResult = $conn->query($query);
 
                         <label for="file-image">Change Image</label>
                         <input type="file" class="form-control-file mb-3" id="file-image" name="file-image">
-                        <small class="text-muted">Leave it blank if you don't want to change the image.</small>
 
                         <label for="img-caption">Change Image Caption</label>
+                        <small class="text-muted">Leave it blank if you don't want to change the image.</small>
                         <input type="text" name="img-caption" id="img-caption" class="form-control mb-3" value="<?php echo htmlspecialchars($news['img_caption']); ?>" required>
                         
                         <label for="categories">Choose Category</label>
