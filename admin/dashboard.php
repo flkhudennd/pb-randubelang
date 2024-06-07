@@ -6,11 +6,11 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 }
 
 $username = $_SESSION['username'];
-$showWelcomeModal = false;
+$show_modal = false;
 
 if (isset($_SESSION['first_login']) && $_SESSION['first_login'] === true) {
-    $showWelcomeModal = true;
-    unset($_SESSION['first_login']); 
+    $show_modal = true;
+    unset($_SESSION['first_login']); // Hapus session setelah login pertama kali
 }
 ?>
 
@@ -33,7 +33,7 @@ if (isset($_SESSION['first_login']) && $_SESSION['first_login'] === true) {
             </a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownAdmin">
                 <a class="dropdown-item" href="/portal-berita/edit-profile">Edit Profile</a>
-                <a class="dropdown-item" href="/portal-berita/add-profile">Add Admin</a>
+                <a class="dropdown-item" href="/portal-berita/add-profile">Add Profile</a>
                 <hr class="dropdown-divider">
                 <a class="dropdown-item btn-danger" href="#" id="logoutLink">Logout</a>
             </div>
@@ -42,7 +42,8 @@ if (isset($_SESSION['first_login']) && $_SESSION['first_login'] === true) {
 </nav>
 
 <!-- Welcome Modal -->
-<div class="modal fade" id="welcomeModal" tabindex="-1" role="dialog" aria-labelledby="welcomeModalLabel" aria-hidden="true">
+<?php if ($show_modal): ?>
+<div class="modal fade" id="welcomeModal" tabindex="1" role="dialog" aria-labelledby="welcomeModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -60,24 +61,25 @@ if (isset($_SESSION['first_login']) && $_SESSION['first_login'] === true) {
         </div>
     </div>
 </div>
+<?php endif; ?>
 
 <!-- Logout Modal -->
 <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Apakah Anda yakin ingin keluar dari website?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmLogout">Yes, Logout</button>
-            </div>
+        <div class="modal-header">
+            <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            Apakah Anda yakin ingin keluar dari website?
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-danger" id="confirmLogout">Yes, Logout</button>
+        </div>
         </div>
     </div>
 </div>
@@ -157,7 +159,7 @@ if (isset($_SESSION['first_login']) && $_SESSION['first_login'] === true) {
 <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script>
     $(document).ready(function() {
-        <?php if ($showWelcomeModal): ?>
+        <?php if ($show_modal): ?>
         $('#welcomeModal').modal('show');
         <?php endif; ?>
 
