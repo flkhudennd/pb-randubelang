@@ -1,4 +1,4 @@
-<?php 
+<?php
 require_once('config.php');
 
 if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['username']) && isset($
                     $_SESSION['loggedin'] = true;
                     $_SESSION['id'] = $id;
                     $_SESSION['username'] = $username;
-                    $_SESSION['first_login'] = true;
+                    $_SESSION['first_login'] = true; // Tambahkan ini untuk menandai login pertama kali
 
                     header("location: dashboard");
                     exit;
