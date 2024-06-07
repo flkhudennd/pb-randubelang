@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     foreach ($paragraphs as $paragraph) {
         $trimmedParagraph = trim($paragraph);
         if (!empty($trimmedParagraph)) {
-            $formattedContent .= '<p>' . htmlspecialchars($trimmedParagraph) . '</p>';
+            $formattedContent .= '<p>' . nl2br(strip_tags($trimmedParagraph, '<b><i><u><strong><em>')) . '</p>';
         }
     }
 
@@ -50,11 +50,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bind_param("ssssi", $title, $formattedContent, $targetFile, $image_caption, $categoryId);
             
             if ($stmt->execute()) {
-                $message = "The news has been added.";
-                header("Location: /portal-berita/dashboard?page=news");
-                exit();
+                $message = "News was successfully added.";
             } else {
-                $message = "Error: " . $stmt->error;
+                $message = "An error occurred while adding news.";
             }
         } else {
             $message = "Sorry, there was an error uploading your file.";

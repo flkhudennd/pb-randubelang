@@ -1,49 +1,6 @@
 <?php
 require_once('config.php');
 
-function displayComplaintForm() {
-  echo <<<HTML
-  <div class="modal fade" id="aduanModal" tabindex="-1" role="dialog" aria-labelledby="aduanModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="aduanModalLabel">Form Aduan</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form method="post" action="">
-            <div class="form-group">
-              <label for="message-text" class="col-form-label" rows="4">Pesan:</label>
-              <textarea class="form-control" id="message-text" name="message" placeholder="(Tuliskan aduan anda dengan detail, antumkan lokasi kejadian jika diperlukan)" required></textarea>
-            </div>
-            <div class="form-group">
-              <label for="sender-name" class="col-form-label">Nama Pengirim:</label>
-              <input type="text" class="form-control" id="sender-name" name="sender-name" required>
-            </div>
-            <div class="form-group">
-              <label for="email" class="col-form-label">Email:</label>
-              <input type="email" class="form-control" id="email" name="email" required>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="anonimCheckbox" name="anonimCheckbox">
-              <label class="form-check-label" for="anonimCheckbox">
-                Kirim sebagai anonim
-              </label>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-            <button type="submit" class="btn btn-primary">Kirim Aduan</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-  HTML;
-}
-
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['message'])) {
 
   $message = $_POST['message'];
@@ -83,6 +40,49 @@ $query = "SELECT * FROM news
           ORDER BY news.created_at DESC
           LIMIT $offset, $newsPerPage";
 $result = $conn->query($query);
+
+function displayComplaintForm() {
+    echo <<<HTML
+    <div class="modal fade" id="aduanModal" tabindex="-1" role="dialog" aria-labelledby="aduanModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="aduanModalLabel">Form Aduan</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form method="post" action="">
+              <div class="form-group">
+                <label for="message-text" class="col-form-label" rows="4">Pesan:</label>
+                <textarea class="form-control" id="message-text" name="message" placeholder="(Tuliskan aduan anda dengan detail, antumkan lokasi kejadian jika diperlukan)" required></textarea>
+              </div>
+              <div class="form-group">
+                <label for="sender-name" class="col-form-label">Nama Pengirim:</label>
+                <input type="text" class="form-control" id="sender-name" name="sender-name" required>
+              </div>
+              <div class="form-group">
+                <label for="email" class="col-form-label">Email:</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="anonimCheckbox" name="anonimCheckbox">
+                <label class="form-check-label" for="anonimCheckbox">
+                  Kirim sebagai anonim
+                </label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+              <button type="submit" class="btn btn-primary">Kirim Aduan</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    HTML;
+  }
 ?>
 
 <!DOCTYPE html>
@@ -130,31 +130,107 @@ $result = $conn->query($query);
 
     <!-- Pagination -->
     <nav aria-label="Pagination">
-      <ul class="pagination justify-content-center mt-4">
-        <li class="page-item <?php echo ($currentPage <= 1) ? 'disabled' : ''; ?>">
-          <a class="page-link" href="?page=1" tabindex="-1" aria-disabled="true">&lt;</a>
-        </li>
-        <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
-          <li class="page-item <?php echo ($i == $currentPage) ? 'active' : ''; ?>">
-            <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
-          </li>
-        <?php endfor; ?>
-        <li class="page-item <?php echo ($currentPage >= $totalPages) ? 'disabled' : ''; ?>">
-          <a class="page-link" href="?page=<?php echo $totalPages; ?>">&gt;</a>
-        </li>
-      </ul>
+        <ul class="pagination justify-content-center mt-4">
+            <li class="page-item <?php echo ($currentPage <= 1) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="?page=1" tabindex="-1" aria-disabled="<?php echo ($currentPage <= 1) ? 'true' : 'false'; ?>">&laquo;</a>
+            </li>
+
+            <li class="page-item <?php echo ($currentPage <= 1) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="?page=<?php echo max(1, $currentPage - 1); ?>" tabindex="-1" aria-disabled="<?php echo ($currentPage <= 1) ? 'true' : 'false'; ?>">&lt;</a>
+            </li>
+
+            <?php
+            $start = max(1, $currentPage - 2);
+            $end = min($totalPages, $currentPage + 2);
+
+            if ($start > 1) {
+                echo '<li class="page-item"><a class="page-link" href="?page=1">1</a></li>';
+                if ($start > 2) {
+                    echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                }
+            }
+
+            for ($i = $start; $i <= $end; $i++) {
+                echo '<li class="page-item ' . ($i == $currentPage ? 'active' : '') . '">';
+                echo '<a class="page-link" href="?page=' . $i . '">' . $i . '</a>';
+                echo '</li>';
+            }
+
+            if ($end < $totalPages) {
+                if ($end < $totalPages - 1) {
+                    echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                }
+                echo '<li class="page-item"><a class="page-link" href="?page=' . $totalPages . '">' . $totalPages . '</a></li>';
+            }
+            ?>
+
+            <!-- Next Page Link -->
+            <li class="page-item <?php echo ($currentPage >= $totalPages) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="?page=<?php echo min($totalPages, $currentPage + 1); ?>" aria-disabled="<?php echo ($currentPage >= $totalPages) ? 'true' : 'false'; ?>">&gt;</a>
+            </li>
+
+            <!-- Last Page Link -->
+            <li class="page-item <?php echo ($currentPage >= $totalPages) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="?page=<?php echo $totalPages; ?>" aria-disabled="<?php echo ($currentPage >= $totalPages) ? 'true' : 'false'; ?>">&raquo;</a>
+            </li>
+        </ul>
     </nav>
+
 
     <hr>
 
-      <div class="aduan">
+    <!-- Jumbotron -->
+    <div class="jumbotron">
+        <h1 class="display-4">Sukses, Plus Randubelang!</h1>
+        <blockquote class="blockquote">
+            <p>Menghadirkan gagasan, serta menciptakan ekosistem pendukung guna mewujudkan ambisi bersama.</p>
+            <footer class="blockquote-footer"><cite>Plus Randubelang</cite> by Suyadi Santos, 1981</footer>
+        </blockquote>
+    </div>
+
+    <hr>
+
+    <!-- Berita Kategori Agenda Desa -->
+    <h1 class="my-4">Agenda Desa</h1>
+    <div class="row">
+        <?php 
+        $queryAgendaDesa = "SELECT * FROM news
+                            WHERE category_id = 13
+                            ORDER BY created_at DESC
+                            LIMIT 3";
+        $resultAgendaDesa = $conn->query($queryAgendaDesa);
+
+        while ($newsAgenda = $resultAgendaDesa->fetch_assoc()): ?>
+            <div class="col-lg-12 mb-4">
+                <a href="news-detail?id=<?php echo $newsAgenda['news_id']; ?>" style="text-decoration: none; color: inherit;">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <img src="<?php echo $newsAgenda['img_url']; ?>" alt="<?php echo $newsAgenda['title']; ?>" class="img-fluid">
+                        </div>
+                        <div class="col-lg-9">
+                            <h3><?php echo $newsAgenda['title']; ?></h3>
+                            <p class="text-muted"><?php echo strftime('%A, %d %B %Y', strtotime($newsAgenda['created_at'])); ?></p>
+                            <p><?php echo substr($newsAgenda['content'], 0, 100); ?>...</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        <?php endwhile; ?>
+    </div>
+
+    <div class="d-flex justify-content-center mb-4">
+        <a href="/portal-berita/all-news" class="btn btn-md btn-info">Lihat semua artikel</a>
+    </div>
+
+    <div class="aduan">
         <button class="btn btn-md btn-danger btn-block" data-toggle="modal" data-target="#aduanModal">
             <span">Pesan Aduan</span>
         </button>
-      </div>
     </div>
+</div>
 
   <?php require_once('templates/footer.php'); ?>
+  
   <script src="assets/vendor/jquery/jquery.min.js"></script>
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script>

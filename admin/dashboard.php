@@ -1,7 +1,16 @@
 <?php
+
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header('Location: /portal-berita/pb-admin');
     exit;
+}
+
+$username = $_SESSION['username'];
+$showWelcomeModal = false;
+
+if (isset($_SESSION['first_login']) && $_SESSION['first_login'] === true) {
+    $showWelcomeModal = true;
+    unset($_SESSION['first_login']); 
 }
 ?>
 
@@ -10,8 +19,8 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
-    <link href="/portal-berita/assets/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
-    <link href="/portal-berita/assets/css/modern-news.css" rel="stylesheet">
+    <link href="assets/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="assets/css/modern-news.css" rel="stylesheet">
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -19,10 +28,12 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     <a class="navbar-brand" href="">Dashboard Randubelang</a>
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAdmin" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button"><i class="fas fa-user"></i></a>
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAdmin" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button"><i class="fas fa-user mr-2"></i>
+            <?php echo htmlspecialchars($username); ?>
+            </a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownAdmin">
-                <a class="dropdown-item" href="#">Profil</a>
-                <a class="dropdown-item" href="#">Pengaturan</a>
+                <a class="dropdown-item" href="/portal-berita/edit-profile">Edit Profile</a>
+                <a class="dropdown-item" href="/portal-berita/add-profile">Add Admin</a>
                 <hr class="dropdown-divider">
                 <a class="dropdown-item btn-danger" href="#" id="logoutLink">Logout</a>
             </div>
@@ -30,25 +41,45 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     </ul>
 </nav>
 
-<!-- Modal -->
-<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        Apakah Anda yakin ingin keluar dari website?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger" id="confirmLogout">Yes, Logout</button>
-      </div>
+<!-- Welcome Modal -->
+<div class="modal fade" id="welcomeModal" tabindex="-1" role="dialog" aria-labelledby="welcomeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="welcomeModalLabel">Login Berhasil</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Selamat datang di dashboard, <?php echo htmlspecialchars($username); ?>!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
-  </div>
+</div>
+
+<!-- Logout Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Apakah Anda yakin ingin keluar dari website?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmLogout">Yes, Logout</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Sidebar -->
@@ -100,7 +131,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                     case 'delete-news':
                         include_once __DIR__ . '/pages/delete-news.php';
                         break;
-                    case 'add-categories':
+                    case 'add-category':
                         include_once __DIR__ . '/pages/add-categories.php';
                         break;
                     case 'edit-category':
@@ -121,12 +152,15 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     </div>
 </div>
 
-
 <!-- jQuery and Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script src="assets/vendor/jquery/jquery.min.js"></script>
+<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script>
     $(document).ready(function() {
+        <?php if ($showWelcomeModal): ?>
+        $('#welcomeModal').modal('show');
+        <?php endif; ?>
+
         $('#logoutLink').on('click', function(e) {
             e.preventDefault();
             $('#logoutModal').modal('show');
@@ -136,8 +170,6 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             window.location.href = '/portal-berita/logout';
         });
     });
-
-    
 </script>
 </body>
 </html>

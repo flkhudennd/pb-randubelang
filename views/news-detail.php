@@ -20,6 +20,14 @@ $stmt->close();
 
 $queryCategories = "SELECT * FROM categories";
 $resultCategories = $conn->query($queryCategories);
+
+$category_id = $news['category_id'];
+
+$queryRelatedNews = "SELECT * FROM news WHERE category_id = ? AND news_id != ? LIMIT 4";
+$stmtRelated = $conn->prepare($queryRelatedNews);
+$stmtRelated->bind_param("ii", $category_id, $news_id);
+$stmtRelated->execute();
+$resultRelated = $stmtRelated->get_result();
 ?>
 
 <!DOCTYPE html>
@@ -45,8 +53,8 @@ $resultCategories = $conn->query($queryCategories);
             <div class="col-lg-8">
               <h4><?php echo htmlspecialchars($news['category_name']); ?></h4>
               <p>Admin Randubelang, <?php echo strftime('%A %d %B %Y', strtotime($news['created_at'])); ?><p>
-              <img class="img-fluid rounded mb-4" src="<?php echo htmlspecialchars($news['img_url']); ?>" alt="" loading="lazy">
-              <blockquote class="blockquote text-center">
+              <img class="img-fluid rounded" src="<?php echo htmlspecialchars($news['img_url']); ?>" alt="" loading="lazy">
+              <blockquote class="blockquote text-center mb-4">
                   <?php echo htmlspecialchars($news['img_caption']); ?>
               </blockquote>
               <div class="news-content">
@@ -54,22 +62,22 @@ $resultCategories = $conn->query($queryCategories);
               </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-4 mt-4">
                 <!-- Sidebar Widgets Column -->
-                <div class="card mb-4 mt-5">
-                    <h5 class="card-header">Search</h5>
+                <!-- <div class="card mb-4 mt-5">
+                    <h5 class="card-header">Kolom Pencarian</h5>
                     <div class="card-body">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search for...">
+                        <div class="input-group" action="/portal-berita/search" method="GET">
+                            <input class="form-control mr-sm-2" type="search" name="query" placeholder="Cari" aria-label="Search" required>
                             <span class="input-group-btn">
-                                <button class="btn btn-secondary" type="button">Search</button>
+                                <button class="btn btn-outline-info" type="submit">Cari</button>
                             </span>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
-                <div class="card my-4">
-                    <h5 class="card-header">Categories</h5>
+                <div class="card mb-4 mt-5">
+                    <h5 class="card-header">Kategori</h5>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-lg-6">
@@ -102,27 +110,33 @@ $resultCategories = $conn->query($queryCategories);
                 </div>
             </div>
 
-            <hr>
-            <h2 class="mb-4">Related News</h2>
-            <div class="row mb-4">
-                <!-- Related News -->
-                <?php for ($i = 1; $i <= 4; $i++): ?>
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                    <div class="card h-100">
-                        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt="" loading="lazy"></a>
-                        <div class="card-body">
-                            <p class="news-category">[News Category]</p>
-                            <h4 class="card-title"><a href="#">Tittle News <?= $i ?></a></h4>
-                            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
-                            <p class="date-news">[Date of publication]</p>
+        <hr>
+
+        <!-- Related News -->
+        <h2 class="my-4">Related News</h2>
+            <div class="row mb-4">    
+                <?php while ($relatedNews = $resultRelated->fetch_assoc()): ?>
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                        <a href="news-detail?id=<?php echo $relatedNews['news_id']; ?>" style="text-decoration: none; color: inherit;">
+                        <div class="card h-100">
+                            <img class="card-img-top" src="<?php echo htmlspecialchars($relatedNews['img_url']); ?>" alt="" loading="lazy">
+                            <div class="card-body">
+                                <p class="news-category"><?php echo htmlspecialchars($news['category_name']); ?></p>
+                                <h5 class="card-title"><?php echo htmlspecialchars($relatedNews['title']); ?></h5>
+                            </div>
+                            <div class="card-footer text-muted">
+                                <p class="date-news"><?php echo strftime('%A %d %B %Y', strtotime($relatedNews['created_at'])); ?></p>
+                            </div>
                         </div>
+                        </a>
                     </div>
-                </div>
-                <?php endfor; ?>
+                <?php endwhile; ?>
             </div>
         </div>
     </div>
-
     <?php require_once('templates/footer.php'); ?>
+
+    <script src="assets/vendor/jquery/jquery.min.js"></script>
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

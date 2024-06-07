@@ -1,26 +1,21 @@
 <?php
-require_once ('config.php');
+require_once('config.php'); 
 
-$category_id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+$searchQuery = filter_input(INPUT_GET, 'query', FILTER_SANITIZE_STRING);
 
-$stmtCategory = $conn->prepare("SELECT category_name FROM categories WHERE category_id = ?");
-$stmtCategory->bind_param("i", $category_id);
-$stmtCategory->execute();
-$resultCategory = $stmtCategory->get_result();
-$category = $resultCategory->fetch_assoc();
-$stmtCategory->close();
-
-$category_name = $category ? $category['category_name'] : "Kategori tidak ditemukan";
-
-if ($category) {
-    $stmtNews = $conn->prepare("SELECT news_id, title, content, img_url, img_caption, created_at FROM news WHERE category_id = ?");
-    $stmtNews->bind_param("i", $category_id);
-    $stmtNews->execute();
-    $resultNews = $stmtNews->get_result();
-    $stmtNews->close();
+if ($searchQuery) {
+    $sql = "SELECT news.*, categories.category_name 
+            FROM news 
+            LEFT JOIN categories ON news.category_id = categories.category_id 
+            WHERE news.title LIKE ? OR news.content LIKE ?";
+    $stmt = $conn->prepare($sql);
+    $searchTerm = '%' . $searchQuery . '%';
+    $stmt->bind_param('ss', $searchTerm, $searchTerm);
+    $stmt->execute();
+    $result = $stmt->get_result();
 } else {
-    $category_name = "Kategori tidak ditemukan";
-    $resultNews = null;
+    header('Location: /portal-berita');
+    exit;
 }
 ?>
 
@@ -29,22 +24,23 @@ if ($category) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kategori <?php echo $category_name; ?></title>
+    <title>Hasil Pencarian</title>
     <link href="assets/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="assets/css/modern-news.css" rel="stylesheet">
 </head>
 <body>
     <?php require_once('templates/navigation.php'); ?>
+
     <div class="container">
         <ol class="breadcrumb mt-4 mb-3">
             <li class="breadcrumb-item"><a href="/portal-berita">Home</a></li>
-            <li class="breadcrumb-item active">Kategori</li>
+            <li class="breadcrumb-item active">Halaman Hasil Pencarian</li>
         </ol>
-        <h1 class="mt-3 mb-3">Kategori: '<?php echo $category_name; ?>'</h1>
+        <h1>Hasil pencarian untuk '<?= htmlspecialchars($searchQuery) ?>'</h1>
         <hr>
         <div class="row">
-            <?php if ($resultNews): ?>
-                <?php while ($news = $resultNews->fetch_assoc()): ?>
+            <?php if ($result->num_rows > 0): ?>
+                <?php while ($news = $result->fetch_assoc()): ?>
                     <div class="col-lg-12 mb-2">
                         <a href="news-detail?id=<?php echo $news['news_id']; ?>" style="text-decoration: none; color: inherit;">
                         <div class="row">
@@ -60,9 +56,9 @@ if ($category) {
                         <hr>
                         </a>
                     </div>
-                    <?php endwhile; ?>
-                <?php else: ?>
-                    <p>Tidak ada berita dalam kategori ini.</p>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <p>Tidak ada hasil pencarian '<?= htmlspecialchars($searchQuery) ?>'</p>
             <?php endif; ?>
         </div>
     </div>
