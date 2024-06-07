@@ -6,7 +6,7 @@ $query = "SELECT news.*, categories.category_name FROM news
 $result = $conn->query($query);
 
 if (!$result) {
-    die("Error querying news: " . $conn->error);
+    die("Kesalahan permintaan berita: " . $conn->error);
 }
 ?>
 
@@ -15,14 +15,14 @@ if (!$result) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All News</title>
+    <title>Semua Berita</title>
     <link href="assets/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="assets/css/modern-news.css" rel="stylesheet">
 </head>
 <body>
     <?php require_once('templates/navigation.php'); ?>
     <div class="container mt-4">
-        <h1 class="mb-4">All News</h1>
+        <h1 class="mb-4">Semua Berita</h1>
         <hr>
         <div class="row">
             <?php while ($news = $result->fetch_assoc()): ?>

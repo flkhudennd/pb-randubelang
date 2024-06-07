@@ -130,29 +130,61 @@ function displayComplaintForm() {
 
     <!-- Pagination -->
     <nav aria-label="Pagination">
-      <ul class="pagination justify-content-center mt-4">
-        <li class="page-item <?php echo ($currentPage <= 1) ? 'disabled' : ''; ?>">
-          <a class="page-link" href="?page=1" tabindex="-1" aria-disabled="true">&lt;</a>
-        </li>
-        <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
-          <li class="page-item <?php echo ($i == $currentPage) ? 'active' : ''; ?>">
-            <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
-          </li>
-        <?php endfor; ?>
-        <li class="page-item <?php echo ($currentPage >= $totalPages) ? 'disabled' : ''; ?>">
-          <a class="page-link" href="?page=<?php echo $totalPages; ?>">&gt;</a>
-        </li>
-      </ul>
+        <ul class="pagination justify-content-center mt-4">
+            <li class="page-item <?php echo ($currentPage <= 1) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="?page=1" tabindex="-1" aria-disabled="<?php echo ($currentPage <= 1) ? 'true' : 'false'; ?>">&laquo;</a>
+            </li>
+
+            <li class="page-item <?php echo ($currentPage <= 1) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="?page=<?php echo max(1, $currentPage - 1); ?>" tabindex="-1" aria-disabled="<?php echo ($currentPage <= 1) ? 'true' : 'false'; ?>">&lt;</a>
+            </li>
+
+            <?php
+            $start = max(1, $currentPage - 2);
+            $end = min($totalPages, $currentPage + 2);
+
+            if ($start > 1) {
+                echo '<li class="page-item"><a class="page-link" href="?page=1">1</a></li>';
+                if ($start > 2) {
+                    echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                }
+            }
+
+            for ($i = $start; $i <= $end; $i++) {
+                echo '<li class="page-item ' . ($i == $currentPage ? 'active' : '') . '">';
+                echo '<a class="page-link" href="?page=' . $i . '">' . $i . '</a>';
+                echo '</li>';
+            }
+
+            if ($end < $totalPages) {
+                if ($end < $totalPages - 1) {
+                    echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                }
+                echo '<li class="page-item"><a class="page-link" href="?page=' . $totalPages . '">' . $totalPages . '</a></li>';
+            }
+            ?>
+
+            <!-- Next Page Link -->
+            <li class="page-item <?php echo ($currentPage >= $totalPages) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="?page=<?php echo min($totalPages, $currentPage + 1); ?>" aria-disabled="<?php echo ($currentPage >= $totalPages) ? 'true' : 'false'; ?>">&gt;</a>
+            </li>
+
+            <!-- Last Page Link -->
+            <li class="page-item <?php echo ($currentPage >= $totalPages) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="?page=<?php echo $totalPages; ?>" aria-disabled="<?php echo ($currentPage >= $totalPages) ? 'true' : 'false'; ?>">&raquo;</a>
+            </li>
+        </ul>
     </nav>
+
 
     <hr>
 
     <!-- Jumbotron -->
     <div class="jumbotron">
-        <h1 class="display-4">Sukses, Randubelang!</h1>
+        <h1 class="display-4">Sukses, Plus Randubelang!</h1>
         <blockquote class="blockquote">
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-            <footer class="blockquote-footer">Someone famous in <cite title="Source Title">Source Title</cite></footer>
+            <p>Menghadirkan gagasan, serta menciptakan ekosistem pendukung guna mewujudkan ambisi bersama.</p>
+            <footer class="blockquote-footer"><cite>Plus Randubelang</cite> by Suyadi Santos, 1981</footer>
         </blockquote>
     </div>
 

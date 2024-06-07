@@ -30,6 +30,25 @@ switch ($request) {
     case '/all-news':
         require_once __DIR__ . "/views/all-news.php";
         break;
+    case '/search':
+        require_once __DIR__ . "/views/search.php";
+        break;
+        case '/add-profile':
+            if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
+                require_once __DIR__ . "/admin/add-profile.php";
+            } else {
+                header('Location: /portal-berita/pb-admin');
+                exit;
+            }
+            break;
+        case '/edit-profile':
+            if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
+                require_once __DIR__ . "/admin/edit-profile.php";
+            } else {
+                header('Location: /portal-berita/pb-admin');
+                exit;
+            }
+            break;
     case '/logout':
         require_once __DIR__ . "/admin/logout.php";
         break;

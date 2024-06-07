@@ -2,6 +2,7 @@
 require_once 'config.php';
 
 $news_id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+$message = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $title = $_POST['title'];
@@ -9,7 +10,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $categoryId = $_POST['category'];
     $image_caption = $_POST['img-caption'];
 
-    $newsContent = preg_replace('/\n(\s*\n)+/', "\n", $newsContent);
+    // Format the news content
+    $paragraphs = explode("\n", $newsContent);
+    $formattedContent = '';
+    foreach ($paragraphs as $paragraph) {
+        $trimmedParagraph = trim($paragraph);
+        if (!empty($trimmedParagraph)) {
+            $formattedContent .= '<p>' . nl2br(strip_tags($trimmedParagraph, '<b><i><u><strong><em>')) . '</p>';
+        }
+    }
 
     if ($_FILES['file-image']['size'] > 0) {
         $image = $_FILES['file-image'];
@@ -22,55 +31,50 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($check !== false) {
             $uploadOk = 1;
         } else {
-            echo "File is not an image.";
+            $message = "File is not an image.";
             $uploadOk = 0;
         }
 
-        if ($image["size"] > 5000000) { 
-            echo "Sorry, your file is too large.";
+        if ($image["size"] > 5000000) {
+            $message = "Sorry, your file is too large.";
             $uploadOk = 0;
         }
 
         if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg") {
-            echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+            $message = "Sorry, only JPG, JPEG, and PNG files are allowed.";
             $uploadOk = 0;
         }
 
         if ($uploadOk == 0) {
-            echo "Sorry, your file was not uploaded.";
+            $message = "Sorry, your file was not uploaded.";
         } else {
             if (move_uploaded_file($image["tmp_name"], $targetFile)) {
                 $stmt = $conn->prepare("UPDATE news 
                                         SET title = ?, content = ?, img_url = ?, img_caption = ?, category_id = ?
                                         WHERE news_id = ?");
-                $stmt->bind_param("ssssii", $title, $newsContent, $targetFile, $image_caption, $categoryId, $news_id);
+                $stmt->bind_param("ssssii", $title, $formattedContent, $targetFile, $image_caption, $categoryId, $news_id);
                 
                 if ($stmt->execute()) {
-                    echo "The news has been updated.";
-                    header("Location: /portal-berita/dashboard?page=news");
-                    exit();
+                    $message = "The news has been updated.";
                 } else {
-                    echo "Error: " . $stmt->error;
+                    $message = "Error: " . $stmt->error;
                 }
             } else {
-                echo "Sorry, there was an error uploading your file.";
+                $message = "Sorry, there was an error uploading your file.";
             }
         }
     } else {
+        $stmt = $conn->prepare("UPDATE news 
+                                SET title = ?, content = ?, img_caption = ?, category_id = ?
+                                WHERE news_id = ?");
+        $stmt->bind_param("sssii", $title, $formattedContent, $image_caption, $categoryId, $news_id);
 
-    $stmt = $conn->prepare("UPDATE news 
-                            SET title = ?, content = ?, img_caption = ?, category_id = ?
-                            WHERE news_id = ?");
-    $stmt->bind_param("ssssi", $title, $newsContent, $image_caption, $categoryId, $news_id);
-
-    if ($stmt->execute()) {
-        echo "The news has been updated.";
-        header("Location: /portal-berita/dashboard?page=news");
-        exit();
-    } else {
-        echo "Error: " . $stmt->error;
+        if ($stmt->execute()) {
+            $message = "The news has been updated.";
+        } else {
+            $message = "Error: " . $stmt->error;
+        }
     }
-}
 }
 
 $stmt = $conn->prepare("SELECT * FROM news WHERE news_id = ?");
@@ -92,6 +96,11 @@ $categoriesResult = $conn->query($query);
             <li class="breadcrumb-item"><a href="/portal-berita/dashboard?page=news" class="text-dark">News List</a></li>
             <li class="breadcrumb-item active">Edit News</li>
         </ol>
+        <?php if ($message): ?>
+            <div class="alert alert-info" role="alert">
+                <?= $message ?>
+            </div>
+        <?php endif; ?>
         <div class="card mb-4">
             <div class="card-body">
                 <form action="" method="POST" enctype="multipart/form-data">

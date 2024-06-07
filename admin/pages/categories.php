@@ -86,16 +86,32 @@ $endEntry = min($offset + $categoryPerPage, $totalCategories);
                                     <div>
                                         <p class="lead mt-2">Showing <?= $startEntry ?> to <?= $endEntry ?> of <?= $totalCategories ?> entries</p>
                                     </div>
-                                    <nav aria-label="Pagination">
-                                        <ul class="pagination justify-content-center mt-2">
+                                        <nav aria-label="Pagination">
+                                        <ul class="pagination justify-content-center mt-4">
                                             <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
                                                 <a class="page-link" href="?page=categories&page_number=<?= $currentPage - 1 ?>" tabindex="-1" aria-disabled="<?= ($currentPage <= 1) ? 'true' : 'false' ?>">&lt;</a>
                                             </li>
-                                            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                            <?php if ($currentPage > 3): ?>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page=categories&page_number=1">1</a>
+                                                </li>
+                                                <?php if ($currentPage > 4): ?>
+                                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
+                                            <?php for ($i = max(1, $currentPage - 2); $i <= min($totalPages, $currentPage + 2); $i++): ?>
                                                 <li class="page-item <?= ($i == $currentPage) ? 'active' : '' ?>">
                                                     <a class="page-link" href="?page=categories&page_number=<?= $i ?>"><?= $i ?></a>
                                                 </li>
                                             <?php endfor; ?>
+                                            <?php if ($currentPage < $totalPages - 2): ?>
+                                                <?php if ($currentPage < $totalPages - 3): ?>
+                                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                                <?php endif; ?>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page=categories&page_number=<?= $totalPages ?>"><?= $totalPages ?></a>
+                                                </li>
+                                            <?php endif; ?>
                                             <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
                                                 <a class="page-link" href="?page=categories&page_number=<?= $currentPage + 1 ?>" aria-disabled="<?= ($currentPage >= $totalPages) ? 'true' : 'false' ?>">&gt;</a>
                                             </li>

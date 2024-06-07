@@ -1,37 +1,51 @@
 <?php
 require_once('config.php');
 
+// Define the number of news items per page
 $newsPerPage = 5;
+
+// Get the current page number from the URL, defaulting to 1 if not present
 $currentPage = isset($_GET['page_number']) ? (int)$_GET['page_number'] : 1;
 $currentPage = max(1, $currentPage);
+
+// Calculate the offset for the SQL query
 $offset = ($currentPage - 1) * $newsPerPage;
 
+// Query to get the total number of news items
 $queryTotalNews = "SELECT COUNT(*) AS total FROM news";
 $resultTotalNews = $conn->query($queryTotalNews);
 
+// Check if the query was successful
 if (!$resultTotalNews) {
     die("Error querying total news: " . $conn->error);
 }
 
+// Fetch the total number of news items
 $rowTotalNews = $resultTotalNews->fetch_assoc();
 $totalNews = $rowTotalNews['total'];
+
+// Calculate the total number of pages
 $totalPages = ceil($totalNews / $newsPerPage);
 
+// Query to get the news items for the current page
 $query = "SELECT news.*, categories.category_name 
           FROM news 
           LEFT JOIN categories ON news.category_id = categories.category_id 
           LIMIT $offset, $newsPerPage";
 $result = $conn->query($query);
 
+// Check if the query was successful
 if (!$result) {
     die("Error querying news: " . $conn->error);
 }
 
+// Fetch the news items
 $news = [];
 while ($row = $result->fetch_assoc()) {
     $news[] = $row;
 }
 
+// Calculate the range of news items being displayed
 $startEntry = $offset + 1;
 $endEntry = min($offset + $newsPerPage, $totalNews);
 ?>
@@ -98,11 +112,27 @@ $endEntry = min($offset + $newsPerPage, $totalNews);
                                         <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
                                             <a class="page-link" href="?page=news&page_number=<?= $currentPage - 1 ?>" tabindex="-1" aria-disabled="<?= ($currentPage <= 1) ? 'true' : 'false' ?>">&lt;</a>
                                         </li>
-                                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                        <?php if ($currentPage > 3): ?>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page=news&page_number=1">1</a>
+                                            </li>
+                                            <?php if ($currentPage > 4): ?>
+                                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                        <?php for ($i = max(1, $currentPage - 2); $i <= min($totalPages, $currentPage + 2); $i++): ?>
                                             <li class="page-item <?= ($i == $currentPage) ? 'active' : '' ?>">
                                                 <a class="page-link" href="?page=news&page_number=<?= $i ?>"><?= $i ?></a>
                                             </li>
                                         <?php endfor; ?>
+                                        <?php if ($currentPage < $totalPages - 2): ?>
+                                            <?php if ($currentPage < $totalPages - 3): ?>
+                                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                                            <?php endif; ?>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page=news&page_number=<?= $totalPages ?>"><?= $totalPages ?></a>
+                                            </li>
+                                        <?php endif; ?>
                                         <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
                                             <a class="page-link" href="?page=news&page_number=<?= $currentPage + 1 ?>" aria-disabled="<?= ($currentPage >= $totalPages) ? 'true' : 'false' ?>">&gt;</a>
                                         </li>

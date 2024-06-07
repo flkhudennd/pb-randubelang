@@ -95,20 +95,36 @@ $endEntry = min($offset + $complaintsPerPage, $totalComplaints);
                                     <p class="lead mt-4">Showing <?= $startEntry ?> to <?= $endEntry ?> of <?= $totalComplaints ?> entries</p>
                                 </div>
                                 <nav aria-label="Pagination">
-                                    <ul class="pagination justify-content-center mt-4">
-                                        <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
-                                            <a class="page-link" href="?pacomplaints&page_number=<?= $currentPage - 1 ?>" tabindex="-1" aria-disabled="<?= ($currentPage <= 1) ? 'true' : 'false' ?>">&lt;</a>
-                                        </li>
-                                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                            <li class="page-item <?= ($i == $currentPage) ? 'active' : '' ?>">
-                                                <a class="page-link" href="?page=complaints&page_number=<?= $i ?>"><?= $i ?></a>
+                                        <ul class="pagination justify-content-center mt-4">
+                                            <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
+                                                <a class="page-link" href="?page=complaints&page_number=<?= $currentPage - 1 ?>" tabindex="-1" aria-disabled="<?= ($currentPage <= 1) ? 'true' : 'false' ?>">&lt;</a>
                                             </li>
-                                        <?php endfor; ?>
-                                        <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
-                                            <a class="page-link" href="?page=complaints&page_number=<?= $currentPage + 1 ?>" aria-disabled="<?= ($currentPage >= $totalPages) ? 'true' : 'false' ?>">&gt;</a>
-                                        </li>
-                                    </ul>
-                                </nav>
+                                            <?php if ($currentPage > 3): ?>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page=complaints&page_number=1">1</a>
+                                                </li>
+                                                <?php if ($currentPage > 4): ?>
+                                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
+                                            <?php for ($i = max(1, $currentPage - 2); $i <= min($totalPages, $currentPage + 2); $i++): ?>
+                                                <li class="page-item <?= ($i == $currentPage) ? 'active' : '' ?>">
+                                                    <a class="page-link" href="?page=complaints&page_number=<?= $i ?>"><?= $i ?></a>
+                                                </li>
+                                            <?php endfor; ?>
+                                            <?php if ($currentPage < $totalPages - 2): ?>
+                                                <?php if ($currentPage < $totalPages - 3): ?>
+                                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                                <?php endif; ?>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page=complaints&page_number=<?= $totalPages ?>"><?= $totalPages ?></a>
+                                                </li>
+                                            <?php endif; ?>
+                                            <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
+                                                <a class="page-link" href="?page=complaints&page_number=<?= $currentPage + 1 ?>" aria-disabled="<?= ($currentPage >= $totalPages) ? 'true' : 'false' ?>">&gt;</a>
+                                            </li>
+                                        </ul>
+                                    </nav>
                             </div>
                             </td>
                         </tr>
